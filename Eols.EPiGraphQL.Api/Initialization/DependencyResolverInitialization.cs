@@ -1,10 +1,8 @@
-﻿using Eols.EPiGraphQL.Core;
-using EPiServer.Framework;
+﻿using EPiServer.Framework;
 using EPiServer.Framework.Initialization;
 using EPiServer.ServiceLocation;
 using GraphQL;
 using GraphQL.Http;
-using GraphQL.Types;
 
 namespace Eols.EPiGraphQL.Api.Initialization
 {
@@ -16,16 +14,13 @@ namespace Eols.EPiGraphQL.Api.Initialization
             context.ConfigurationComplete += (o, e) =>
             {
                 var services = context.Services;
-
-                services.AddSingleton<IGraphQLEPiServerDependencyResolver>(x => new GraphQLEPiServerFuncDependencyResolver(x));
-                services.AddSingleton<GraphQL.IDependencyResolver>(x => new GraphQLEPiServerFuncDependencyResolver(x));
                 
-
                 services.AddSingleton<IDocumentExecuter>(new DocumentExecuter());
                 services.AddSingleton<IDocumentWriter>(new DocumentWriter(true));
 
-                services.AddSingleton<IRootQuery, RootQuery>();
-                services.AddSingleton<ISchema, EPiServerSchema>();
+                services.AddSingleton<GraphQL.IDependencyResolver>(x => 
+                    new FuncDependencyResolver(type =>  x.GetInstance(type))
+                );
             };
         }
 

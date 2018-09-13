@@ -174,8 +174,12 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Eols.EPiGraphQL.Core\Eols.EPiGraphQL.Core\Eols.EPiGraphQL.Core.csproj">
-      <Project>{4780f759-fdde-4e79-a10e-0c2a69ec945d}</Project>
+    <ProjectReference Include="..\Eols.EPiGraphQL.Cms\Eols.EPiGraphQL.Cms.csproj">
+      <Project>{681A0225-1C4E-48A2-B60F-647723429147}</Project>
+      <Name>Eols.EPiGraphQL.Cms</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Eols.EPiGraphQL.Core\Eols.EPiGraphQL.Core.csproj">
+      <Project>{57ab6f4f-59cb-4dd8-9688-c28278405cec}</Project>
       <Name>Eols.EPiGraphQL.Core</Name>
     </ProjectReference>
   </ItemGroup>

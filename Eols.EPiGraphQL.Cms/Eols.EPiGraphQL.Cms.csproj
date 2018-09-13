@@ -10,7 +10,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Eols.EPiGraphQL.Core\Eols.EPiGraphQL.Core\Eols.EPiGraphQL.Core.csproj" />
+    <ProjectReference Include="..\Eols.EPiGraphQL.Core\Eols.EPiGraphQL.Core.csproj" />
   </ItemGroup>
 
 </Project>

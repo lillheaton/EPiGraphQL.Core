@@ -1,9 +1,12 @@
 ﻿using Eols.EPiGraphQL.Api.Models;
+using EPiServer.ServiceLocation;
 using GraphQL;
 using GraphQL.Http;
 using GraphQL.Instrumentation;
 using GraphQL.Types;
+using GraphQL.Utilities;
 using GraphQL.Validation.Complexity;
+using System;
 using System.Net;
 using System.Net.Http;
 using System.Text;
@@ -28,41 +31,60 @@ namespace Eols.EPiGraphQL.Api.Controllers
             _writer = writer;
             _schema = schema;
         }
-
+        public GraphQLController() : this(
+            ServiceLocator.Current.GetInstance<IDocumentExecuter>(),
+            ServiceLocator.Current.GetInstance<IDocumentWriter>(),
+            ServiceLocator.Current.GetInstance<ISchema>())
+        {
+        }
+        
         [HttpPost]
         [Route("")]
         public async Task<HttpResponseMessage> PostAsync(HttpRequestMessage request, GraphQLQuery query)
         {
-            var inputs = query.Variables.ToInputs();
-            var queryToExecute = query.Query;
+            var test = new SchemaPrinter(_schema).Print();
 
-            //if (!string.IsNullOrWhiteSpace(query.NamedQuery))
-            //{
-            //    queryToExecute = _namedQueries[query.NamedQuery];
-            //}
-
-            var result = await _executer.ExecuteAsync(_ =>
+            try
             {
-                _.Schema = _schema;
-                _.Query = queryToExecute;
-                _.OperationName = query.OperationName;
-                _.Inputs = inputs;
+                var inputs = query.Variables.ToInputs();
+                var queryToExecute = query.Query;
 
-                _.ComplexityConfiguration = new ComplexityConfiguration { MaxDepth = 15 };
-                _.FieldMiddleware.Use<InstrumentFieldsMiddleware>();
+                //if (!string.IsNullOrWhiteSpace(query.NamedQuery))
+                //{
+                //    queryToExecute = _namedQueries[query.NamedQuery];
+                //}
 
-            }).ConfigureAwait(false);
+                var result = await _executer.ExecuteAsync(_ =>
+                {
+                    _.Schema = _schema;
+                    _.Query = queryToExecute;
+                    _.OperationName = query.OperationName;
+                    _.Inputs = inputs;
 
-            var httpResult = result.Errors?.Count > 0
-                ? HttpStatusCode.BadRequest
-                : HttpStatusCode.OK;
+                    _.ComplexityConfiguration = new ComplexityConfiguration { MaxDepth = 15 };
+                    _.FieldMiddleware.Use<InstrumentFieldsMiddleware>();
 
-            var json = _writer.Write(result);
+                }).ConfigureAwait(false);
 
-            var response = request.CreateResponse(httpResult);
-            response.Content = new StringContent(json, Encoding.UTF8, "application/json");
+                result.ExposeExceptions = true;
+                
+                var httpResult = result.Errors?.Count > 0
+                    ? HttpStatusCode.BadRequest
+                    : HttpStatusCode.OK;
 
-            return response;
+                var json = _writer.Write(result);
+
+                var response = request.CreateResponse(httpResult);
+                response.Content = new StringContent(json, Encoding.UTF8, "application/json");
+
+                return response;
+            }
+            catch (Exception e)
+            {
+                return Task.FromResult<HttpResponseMessage>(
+                    request.CreateErrorResponse(HttpStatusCode.BadRequest, e)).Result;
+            }
+
         }        
     }
 }
