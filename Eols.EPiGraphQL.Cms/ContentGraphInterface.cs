@@ -26,6 +26,26 @@ namespace Eols.EPiGraphQL.Cms
             Field<IntGraphType>("Id", resolve: x => x.Source.ContentLink.ID);
             Field<IntGraphType>("ParentId", resolve: x => x.Source.ParentLink.ID);
             Field<StringGraphType>("Type", resolve: x => x.Source.GetOriginalType().Name);
+            Field<StringGraphType>(
+                "Path",
+                arguments: new QueryArguments(
+                    new QueryArgument<BooleanGraphType>
+                    {
+                        DefaultValue = false,
+                        Name = "absoluteUrl"
+                    },
+                    new QueryArgument<StringGraphType>
+                    {
+                        DefaultValue = "en",
+                        Name = "locale"
+                    }
+                ),
+                resolve: x => 
+                    x.Source.ContentLink.GetUrl(
+                        x.GetArgument<string>("locale"), x.GetArgument<bool>("absoluteUrl")
+                    )
+                );
+
             Field<ListGraphType<ContentGraphInterface>>(
                 "Children",
                 resolve: x =>

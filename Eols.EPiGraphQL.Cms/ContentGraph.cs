@@ -5,6 +5,7 @@ using EPiServer.ServiceLocation;
 using EPiServer.Web;
 using GraphQL;
 using GraphQL.Types;
+using System.Globalization;
 
 namespace Eols.EPiGraphQL.Cms
 {
@@ -27,15 +28,22 @@ namespace Eols.EPiGraphQL.Cms
                     {
                         Name = "id",
                         DefaultValue = SiteDefinition.Current.StartPage.ID
+                    },
+                    new QueryArgument<StringGraphType>()
+                    {
+                        Name = "locale",
+                        DefaultValue = "en"
                     }
                 ),
                 resolve: context =>
                 {
                     int id = context.GetArgument<int>("id");
+                    string locale = context.GetArgument<string>("locale");
 
                     if (_contentLoader
                         .TryGet<IContent>(
-                            new ContentReference(id), 
+                            new ContentReference(id),
+                            new CultureInfo(locale),
                             out IContent result))
                     {
                         return result;

@@ -1,9 +1,11 @@
 ﻿using Eols.EPiGraphQL.Cms.Factory;
 using Eols.EPiGraphQL.Core;
 using EPiServer;
+using EPiServer.Core;
 using EPiServer.DataAbstraction;
 using EPiServer.ServiceLocation;
 using GraphQL.Types;
+using GraphQL.Utilities;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 
@@ -20,7 +22,7 @@ namespace Eols.EPiGraphQL.Cms
             IContentLoader contentLoader)
         {
             Name = "ContentUnion";
-
+            
             var contentGraphInterface = ContentTypeFactory.GetContentGraphInterface();
 
             var graphs = ContentTypeFactory
@@ -51,21 +53,29 @@ namespace Eols.EPiGraphQL.Cms
             var propertiesTuple = contentType
                 .ModelType
                 .GetPropertiesWithAttribute<DisplayAttribute>();
-
+            
             // Create fields out of them
             foreach (var tuple in propertiesTuple)
             {
                 var propType = tuple.PropertyInfo.PropertyType;
                 var displayAttribute = tuple.attribute;
 
-                if (propType == typeof(string))
+                // Check to see if the type is already registred in the GraphTypeRegistry
+                var resolvedType = GraphTypeTypeRegistry.Get(propType);
+                if(resolvedType != null)
                 {
-                    graph.Field<StringGraphType>(propType.Name, displayAttribute.Description);
+                    graph.Field(resolvedType, tuple.PropertyInfo.Name, displayAttribute.Description);
                 }
-                if (propType == typeof(int))
-                {
-                    graph.Field<IntGraphType>(propType.Name, displayAttribute.Description);
-                }
+
+                // Check if it's a IContent type (Block)
+                //if (propType.IsAssignableFrom(typeof(IContentData)))
+                //{
+                //    //resolvedType
+                //    graph.Field<ContentGraphInterface>(
+                //        tuple.PropertyInfo.Name, 
+                //        displayAttribute.Description, 
+                //        resolve: x => tuple.PropertyInfo.GetValue(x.Source));
+                //}
             }
 
             // Method to check if is type
