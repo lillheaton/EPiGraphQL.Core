@@ -14,7 +14,7 @@ namespace Eols.EPiGraphQL.Cms.Factory
             return contentTypeRepository.List().Where(x => x.ModelType != null);
         }
 
-        public static IInterfaceGraphType GetContentGraphInterface()
+        public static IInterfaceGraphType GetGraphInterface<TSource>()
         {
             var interfaces = ServiceLocator.Current
                 .GetAllInstances<IInterfaceGraphType>()
@@ -24,7 +24,7 @@ namespace Eols.EPiGraphQL.Cms.Factory
                 .FirstOrDefault(x => 
                     x.GetType()
                     .BaseType
-                    .GetGenericArguments()[0] == typeof(IContent)
+                    .GetGenericArguments()[0] == typeof(TSource)
                 );
         }
     }

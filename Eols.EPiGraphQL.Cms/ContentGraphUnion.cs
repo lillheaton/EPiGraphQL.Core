@@ -6,8 +6,10 @@ using EPiServer.DataAbstraction;
 using EPiServer.ServiceLocation;
 using GraphQL.Types;
 using GraphQL.Utilities;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Reflection;
 
 namespace Eols.EPiGraphQL.Cms
 {
@@ -17,34 +19,95 @@ namespace Eols.EPiGraphQL.Cms
     [ServiceConfiguration(typeof(IEPiServerGraphUnion), Lifecycle = ServiceInstanceScope.Singleton)]
     public class ContentGraphUnion : UnionGraphType, IEPiServerGraphUnion
     {
-        public ContentGraphUnion(
-            IContentTypeRepository contentTypeRepository,
-            IContentLoader contentLoader)
+        private readonly IContentTypeRepository _contentTypeRepository;
+        
+        private readonly IInterfaceGraphType _contentInterface;
+        private readonly IInterfaceGraphType _contentDataInterface;
+
+        public ContentGraphUnion(IContentTypeRepository contentTypeRepository)
         {
             Name = "ContentUnion";
             
-            var contentGraphInterface = ContentTypeFactory.GetContentGraphInterface();
+            _contentTypeRepository = contentTypeRepository;
+            _contentInterface = ContentTypeFactory.GetGraphInterface<IContent>();
+            _contentDataInterface = ContentTypeFactory.GetGraphInterface<IContentData>();
 
-            var graphs = ContentTypeFactory
-                .GetAvailableContentTypes(contentTypeRepository)
-                .Select(contentType =>
-                    CreateGraphFromType(contentType, contentGraphInterface)
-                );
+            var availableTypes = ContentTypeFactory.GetAvailableContentTypes(_contentTypeRepository);
 
-            // Set all graph types to union
-            foreach (var graph in graphs)
+            var blockTypes = availableTypes.Where(IsBlockType);
+            var otherTypes = availableTypes.Where(x => IsBlockType(x) == false);
+            
+            // Create graphs of type Block
+            var blockGraphs = CreateGraphs(blockTypes);
+
+            // Add types so we can utilize them on other types (PageData)
+            foreach (var graph in blockGraphs)
+            {
+                AddPossibleType(graph);
+            }
+
+            var otherGraphs = CreateGraphs(otherTypes);
+            
+            foreach (var graph in otherGraphs)
             {                
                 AddPossibleType(graph);
             }
         }
 
-        private static ObjectGraphType CreateGraphFromType(ContentType contentType, IInterfaceGraphType interfaceGraph)
+        private static bool IsBlockType(ContentType contentType) 
+            => typeof(BlockData).IsAssignableFrom(contentType.ModelType);
+
+        /// <summary>
+        /// NOTE! Converts block types first so they can be used as local blocks
+        /// </summary>
+        /// <returns></returns>
+        private IEnumerable<ObjectGraphType> CreateGraphs(IEnumerable<ContentType> contentTypes)
+        {
+            return contentTypes.Select(contentType =>
+                CreateGraphFromType(contentType, _contentInterface, _contentDataInterface)
+            );
+        }
+
+        private void SetFields(ref ObjectGraphType objectGraph, (PropertyInfo propertyInfo, DisplayAttribute attribute) tuple)
+        {
+            var propType = tuple.propertyInfo.PropertyType;
+            var displayAttribute = tuple.attribute;
+
+            // Check to see if the type is already registred in the GraphTypeRegistry
+            var resolvedType = GraphTypeTypeRegistry.Get(propType);
+            if (resolvedType != null)
+            {
+                objectGraph.Field(resolvedType, tuple.propertyInfo.Name, tuple.attribute.Description);
+            }
+
+            // Check if it's a Block (IContentData) type
+            if (typeof(IContentData).IsAssignableFrom(propType))
+            {
+                // NOTE! Assumes that all blocks that could be local blocks are already processed and resolved and inserted into the "PossibleTypes"
+                var resolvedBlockGraphType = base.PossibleTypes
+                    .FirstOrDefault(x => 
+                        x.HasMetadata("type") && 
+                        ((System.Type)x.Metadata["type"]).Equals(propType)
+                    );
+
+                objectGraph.AddField(
+                    new FieldType
+                    {
+                        Name = tuple.propertyInfo.Name,
+                        Description = displayAttribute.Description,
+                        ResolvedType = resolvedBlockGraphType
+                    });                
+            }
+        }
+
+        private ObjectGraphType CreateGraphFromType(ContentType contentType, params IInterfaceGraphType[] interfaces)
         {
             var graph = new ObjectGraphType();
             graph.Name = contentType.Name;
+            graph.Metadata["type"] = contentType.ModelType;
 
             // Add all interface fields to graph
-            foreach (var field in interfaceGraph.Fields)
+            foreach (var field in interfaces.SelectMany(x => x.Fields))
             {
                 graph.AddField(field);
             }
@@ -57,25 +120,7 @@ namespace Eols.EPiGraphQL.Cms
             // Create fields out of them
             foreach (var tuple in propertiesTuple)
             {
-                var propType = tuple.PropertyInfo.PropertyType;
-                var displayAttribute = tuple.attribute;
-
-                // Check to see if the type is already registred in the GraphTypeRegistry
-                var resolvedType = GraphTypeTypeRegistry.Get(propType);
-                if(resolvedType != null)
-                {
-                    graph.Field(resolvedType, tuple.PropertyInfo.Name, displayAttribute.Description);
-                }
-
-                // Check if it's a IContent type (Block)
-                //if (propType.IsAssignableFrom(typeof(IContentData)))
-                //{
-                //    //resolvedType
-                //    graph.Field<ContentGraphInterface>(
-                //        tuple.PropertyInfo.Name, 
-                //        displayAttribute.Description, 
-                //        resolve: x => tuple.PropertyInfo.GetValue(x.Source));
-                //}
+                SetFields(ref graph, tuple);              
             }
 
             // Method to check if is type
@@ -84,8 +129,11 @@ namespace Eols.EPiGraphQL.Cms
                 return obj.GetOriginalType() == contentType.ModelType;
             };
 
-            // Add resolved interface to graph type
-            graph.AddResolvedInterface(interfaceGraph);
+            foreach (var @interface in interfaces)
+            {
+                // Add resolved interface to graph type
+                graph.AddResolvedInterface(@interface);
+            }
             
             return graph;
         }
