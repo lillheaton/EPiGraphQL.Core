@@ -1,4 +1,5 @@
 ﻿using Eols.EPiGraphQL.Cms.Factory;
+using Eols.EPiGraphQL.Core;
 using EPiServer;
 using EPiServer.Core;
 using EPiServer.DataAbstraction;
@@ -12,13 +13,13 @@ namespace Eols.EPiGraphQL.Cms
     public class ContentGraphInterface : InterfaceGraphType<IContent>
     {
         public ContentGraphInterface(
-            IContentLoader contentLoader, 
+            IContentLoader contentLoader,            
             IContentTypeRepository contentTypeRepository)
         {
             var availableTypes = ContentTypeFactory
                 .GetAvailableContentTypes(contentTypeRepository)
                 .Select(x => x.ModelType)
-                .ToArray();
+                .ToArray();            
 
             Name = "ContentInterface";
             Field(x => x.Name);
@@ -36,27 +37,47 @@ namespace Eols.EPiGraphQL.Cms
                     },
                     new QueryArgument<StringGraphType>
                     {
-                        DefaultValue = "en",
+                        DefaultValue = Constants.Value.DefaultLocale,
                         Name = "locale"
                     }
                 ),
-                resolve: x => 
-                    x.Source.ContentLink.GetUrl(
-                        x.GetArgument<string>("locale"), x.GetArgument<bool>("absoluteUrl")
-                    )
-                );
+                resolve: x =>
+                {
+                    var locale = x.GetLocaleFromArgumentOrContext();
+
+                    return x.Source.ContentLink.GetUrl(
+                        locale.Name, x.GetArgument<bool>("absoluteUrl")
+                    );
+                });
 
             Field<ListGraphType<ContentGraphInterface>>(
                 "Children",
+                arguments: new QueryArguments(
+                    new QueryArgument<BooleanGraphType>
+                    {
+                        DefaultValue = true,
+                        Name = "allowFallbackLanguage"
+                    }
+                ),
                 resolve: x =>
                 {
+                    var locale = x.GetLocaleFromArgumentOrContext();
+                    var allowFallback = x.GetArgument<bool>("allowFallbackLanguage");
+
+                    var loaderOptions = new LoaderOptions
+                    { 
+                        allowFallback
+                            ? LanguageLoaderOption.Fallback(locale)
+                            : LanguageLoaderOption.Specific(locale)
+                    };                    
+
                     return contentLoader
-                            .GetChildren<PageData>(x.Source.ContentLink)
+                            .GetChildren<PageData>(x.Source.ContentLink, loaderOptions)
                             .Where(content =>
                                 availableTypes
                                 .Contains(content.GetOriginalType())
                             );
                 });
-        }
+        }        
     }
 }

@@ -22,7 +22,7 @@ namespace Eols.EPiGraphQL.Cms
         private readonly IContentTypeRepository _contentTypeRepository;
         
         private readonly IInterfaceGraphType _contentInterface;
-        private readonly IInterfaceGraphType _contentDataInterface;
+        private readonly IInterfaceGraphType _localizableInterface;
 
         public ContentGraphUnion(IContentTypeRepository contentTypeRepository)
         {
@@ -30,7 +30,7 @@ namespace Eols.EPiGraphQL.Cms
             
             _contentTypeRepository = contentTypeRepository;
             _contentInterface = ContentTypeFactory.GetGraphInterface<IContent>();
-            _contentDataInterface = ContentTypeFactory.GetGraphInterface<IContentData>();
+            _localizableInterface = ContentTypeFactory.GetGraphInterface<ILocalizable>();
 
             var availableTypes = ContentTypeFactory.GetAvailableContentTypes(_contentTypeRepository);
 
@@ -64,8 +64,13 @@ namespace Eols.EPiGraphQL.Cms
         private IEnumerable<ObjectGraphType> CreateGraphs(IEnumerable<ContentType> contentTypes)
         {
             return contentTypes.Select(contentType =>
-                CreateGraphFromType(contentType, _contentInterface, _contentDataInterface)
-            );
+            {
+                if (typeof(PageData).IsAssignableFrom(contentType.ModelType))
+                {
+                    return CreateGraphFromType(contentType, _contentInterface, _localizableInterface);
+                }
+                return CreateGraphFromType(contentType, _contentInterface);
+            });
         }
 
         private void SetFields(ref ObjectGraphType objectGraph, (PropertyInfo propertyInfo, DisplayAttribute attribute) tuple)

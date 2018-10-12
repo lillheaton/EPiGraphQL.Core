@@ -4,8 +4,8 @@ using EPiServer.Core;
 using EPiServer.ServiceLocation;
 using EPiServer.Web;
 using GraphQL;
+using GraphQL.Language.AST;
 using GraphQL.Types;
-using System.Globalization;
 
 namespace Eols.EPiGraphQL.Cms
 {
@@ -21,8 +21,8 @@ namespace Eols.EPiGraphQL.Cms
             Name = "Content";
 
             Field<ContentGraphInterface>(
-                "search",
-                "Search after content by ContentReferenceID, default => \"current site\" start page",
+                "Get",
+                "Get content by ContentReferenceID, default => \"current site\" start page",
                 arguments: new QueryArguments(
                     new QueryArgument<IntGraphType>()
                     {
@@ -32,18 +32,20 @@ namespace Eols.EPiGraphQL.Cms
                     new QueryArgument<StringGraphType>()
                     {
                         Name = "locale",
-                        DefaultValue = "en"
+                        DefaultValue = Constants.Value.DefaultLocale
                     }
                 ),
                 resolve: context =>
                 {
                     int id = context.GetArgument<int>("id");
-                    string locale = context.GetArgument<string>("locale");
+                    var locale = context.GetLocaleFromArgumentOrContext();
+
+                    context.Variables.Add(new Variable { Name = "locale", Value = locale.Name });
 
                     if (_contentLoader
                         .TryGet<IContent>(
                             new ContentReference(id),
-                            new CultureInfo(locale),
+                            locale,
                             out IContent result))
                     {
                         return result;
