@@ -21,7 +21,7 @@ namespace Eols.EPiGraphQL.Cms
             Name = "Content";
 
             Field<ContentGraphInterface>(
-                "Get",
+                "Item",
                 "Get content by ContentReferenceID, default => \"current site\" start page",
                 arguments: new QueryArguments(
                     new QueryArgument<IntGraphType>()
@@ -38,7 +38,7 @@ namespace Eols.EPiGraphQL.Cms
                 resolve: context =>
                 {
                     int id = context.GetArgument<int>("id");
-                    var locale = context.GetLocaleFromArgumentOrContext();
+                    var locale = context.GetLocaleFromArgument();
 
                     context.Variables.Add(new Variable { Name = "locale", Value = locale.Name });
 

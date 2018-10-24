@@ -13,7 +13,7 @@ namespace Eols.EPiGraphQL.Cms.Factory
         {
             return contentTypeRepository.List().Where(x => x.ModelType != null);
         }
-
+        
         public static IInterfaceGraphType GetGraphInterface<TSource>()
         {
             var interfaces = ServiceLocator.Current

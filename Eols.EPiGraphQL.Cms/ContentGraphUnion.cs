@@ -6,6 +6,7 @@ using EPiServer.DataAbstraction;
 using EPiServer.ServiceLocation;
 using GraphQL.Types;
 using GraphQL.Utilities;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -13,14 +14,13 @@ using System.Reflection;
 
 namespace Eols.EPiGraphQL.Cms
 {
-    //https://github.com/vietnam-devs/crmcore/blob/master/src/modules/crm/CRMCore.Module.GraphQL/Types/TableType.cs
-    //https://medium.com/the-graphqlhub/graphql-tour-interfaces-and-unions-7dd5be35de0d
-
     [ServiceConfiguration(typeof(IEPiServerGraphUnion), Lifecycle = ServiceInstanceScope.Singleton)]
     public class ContentGraphUnion : UnionGraphType, IEPiServerGraphUnion
     {
+        public const string NONE_RESOLVED_GRAPH_NAME = "NoneResolvedType";
+
         private readonly IContentTypeRepository _contentTypeRepository;
-        
+
         private readonly IInterfaceGraphType _contentInterface;
         private readonly IInterfaceGraphType _localizableInterface;
 
@@ -32,7 +32,7 @@ namespace Eols.EPiGraphQL.Cms
             _contentInterface = ContentTypeFactory.GetGraphInterface<IContent>();
             _localizableInterface = ContentTypeFactory.GetGraphInterface<ILocalizable>();
 
-            var availableTypes = ContentTypeFactory.GetAvailableContentTypes(_contentTypeRepository);
+            var availableTypes = ContentTypeFactory.GetAvailableContentTypes(_contentTypeRepository);            
 
             var blockTypes = availableTypes.Where(IsBlockType);
             var otherTypes = availableTypes.Where(x => IsBlockType(x) == false);
@@ -46,7 +46,11 @@ namespace Eols.EPiGraphQL.Cms
                 AddPossibleType(graph);
             }
 
-            var otherGraphs = CreateGraphs(otherTypes);
+            var otherGraphs = 
+                CreateGraphs(otherTypes)
+                .Concat(
+                    new[] { CreateGraphFromType(new ContentType { Name = NONE_RESOLVED_GRAPH_NAME }, _contentInterface) }
+                );
             
             foreach (var graph in otherGraphs)
             {                
@@ -65,7 +69,7 @@ namespace Eols.EPiGraphQL.Cms
         {
             return contentTypes.Select(contentType =>
             {
-                if (typeof(PageData).IsAssignableFrom(contentType.ModelType))
+                if (contentType.ModelType != null && typeof(PageData).IsAssignableFrom(contentType.ModelType))
                 {
                     return CreateGraphFromType(contentType, _contentInterface, _localizableInterface);
                 }
@@ -109,7 +113,11 @@ namespace Eols.EPiGraphQL.Cms
         {
             var graph = new ObjectGraphType();
             graph.Name = contentType.Name;
-            graph.Metadata["type"] = contentType.ModelType;
+
+            if(contentType.ModelType != null)
+            {
+                graph.Metadata["type"] = contentType.ModelType;
+            }
 
             // Add all interface fields to graph
             foreach (var field in interfaces.SelectMany(x => x.Fields))
@@ -120,7 +128,8 @@ namespace Eols.EPiGraphQL.Cms
             // Loop through epi content type properties with display attribute
             var propertiesTuple = contentType
                 .ModelType
-                .GetPropertiesWithAttribute<DisplayAttribute>();
+                ?.GetPropertiesWithAttribute<DisplayAttribute>() 
+                ?? new (PropertyInfo PropertyInfo, DisplayAttribute attribute)[] { } ;
             
             // Create fields out of them
             foreach (var tuple in propertiesTuple)
@@ -129,9 +138,23 @@ namespace Eols.EPiGraphQL.Cms
             }
 
             // Method to check if is type
-            graph.IsTypeOf = obj =>
+            graph.IsTypeOf = target =>
             {
-                return obj.GetOriginalType() == contentType.ModelType;
+                bool isTypeOf = target.GetOriginalType() == contentType.ModelType;
+
+                if(!isTypeOf && contentType.ModelType == null)
+                {
+                    bool hasAnyType = base.PossibleTypes
+                        .Any(x =>
+                            x.HasMetadata("type") &&
+                            x.GetMetadata<Type>("type").Equals(target.GetOriginalType())
+                        );
+
+                    if (hasAnyType == false)
+                        return true;
+                }
+
+                return isTypeOf;
             };
 
             foreach (var @interface in interfaces)
@@ -141,6 +164,6 @@ namespace Eols.EPiGraphQL.Cms
             }
             
             return graph;
-        }
+        }        
     }
 }

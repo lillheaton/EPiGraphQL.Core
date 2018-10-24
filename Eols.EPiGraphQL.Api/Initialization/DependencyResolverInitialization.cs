@@ -17,7 +17,8 @@ namespace Eols.EPiGraphQL.Api.Initialization
                 
                 services.AddSingleton<IDocumentExecuter>(new DocumentExecuter());
                 services.AddSingleton<IDocumentWriter>(new DocumentWriter(true));
-
+                services.AddSingleton<GraphQL.Relay.Http.RequestExecutor>();
+                
                 services.AddSingleton<GraphQL.IDependencyResolver>(x => 
                     new FuncDependencyResolver(type =>  x.GetInstance(type))
                 );

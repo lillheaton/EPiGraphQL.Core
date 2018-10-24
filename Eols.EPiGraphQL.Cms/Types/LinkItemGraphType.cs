@@ -25,7 +25,7 @@ namespace Eols.EPiGraphQL.Cms.Types
                 ),
                 resolve: x => 
                 {
-                    var locale = x.GetLocaleFromArgumentOrContext();
+                    var locale = x.GetLocaleFromArgument();
                     var absoluteUrl = x.GetArgument<bool>("absoluteUrl");
                     var permanentLinkMap = permanentLinkMapper.Find(new UrlBuilder(x.Source.Href));
 

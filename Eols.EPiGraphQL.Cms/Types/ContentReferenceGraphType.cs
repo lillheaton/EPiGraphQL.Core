@@ -18,18 +18,11 @@ namespace Eols.EPiGraphQL.Cms.Types
         public ContentReferenceGraphType(IContentLoader contentLoader, IContentTypeRepository contentTypeRepository)
         {
             Name = "ContentReference";
-
-            var availableTypes = ContentTypeFactory.GetAvailableContentTypes(contentTypeRepository);
-
+            
             Field("Id", x => x.ID);
             Field<ContentGraphInterface>("Content",
                 resolve: x => {
-                    var content = contentLoader.Get<IContent>(x.Source);
-                    if (availableTypes.Any(contentType => contentType.ModelType == content.GetOriginalType()))
-                    {
-                        return content;
-                    }
-                    return null;
+                    return contentLoader.Get<IContent>(x.Source);                    
                 });
         }
     }
