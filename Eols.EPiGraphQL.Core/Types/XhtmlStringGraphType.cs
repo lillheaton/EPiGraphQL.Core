@@ -1,11 +1,10 @@
-﻿using Eols.EPiGraphQL.Core;
-using EPiServer.Core;
+﻿using EPiServer.Core;
 using EPiServer.ServiceLocation;
 using GraphQL.Language.AST;
 using GraphQL.Types;
 using System;
 
-namespace Eols.EPiGraphQL.Cms.Types
+namespace Eols.EPiGraphQL.Core.Types
 {
     //https://github.com/graphql-dotnet/graphql-dotnet/issues/787
 

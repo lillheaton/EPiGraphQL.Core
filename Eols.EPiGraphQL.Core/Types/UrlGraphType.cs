@@ -1,12 +1,11 @@
-﻿using Eols.EPiGraphQL.Core;
-using EPiServer;
+﻿using EPiServer;
 using EPiServer.ServiceLocation;
 using EPiServer.Web.Routing;
 using GraphQL.Language.AST;
 using GraphQL.Types;
 using System;
 
-namespace Eols.EPiGraphQL.Cms.Types
+namespace Eols.EPiGraphQL.Core.Types
 {
     [ServiceConfiguration(typeof(ICustomGraphType), Lifecycle = ServiceInstanceScope.Singleton)]
     public class UrlGraphType : ScalarGraphType, ICustomGraphType

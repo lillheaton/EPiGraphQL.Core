@@ -1,6 +1,5 @@
-﻿using EPiServer.Core;
+﻿using Eols.EPiGraphQL.Core.Loader;
 using EPiServer.ServiceLocation;
-using GraphQL;
 using GraphQL.Types;
 using GraphQL.Utilities;
 using System.Linq;
@@ -13,22 +12,32 @@ namespace Eols.EPiGraphQL.Core
         public EPiServerSchema(GraphQL.IDependencyResolver resolver) : base(resolver)
         {
             var serviceLocator = resolver.Resolve<IServiceLocator>();
-            
+
             // Step 1: Register all types so we can (x => x.contentarea)
-            var customGraphTypes = serviceLocator.GetAllInstances<ICustomGraphType>().ToArray();
+            RegisterCustomGraphTypes(serviceLocator);
+
+            // step 2: Register all graphs, interfaces, unions etc
+            RegisterInterfacesAndUnions(serviceLocator);
+            
+            Query = resolver.Resolve<IRootQuery>();
+        }
+
+        private void RegisterCustomGraphTypes(IServiceLocator serviceLocator)
+        {
+            var customGraphTypes = GraphTypeLoader.GetCustomGraphTypes(serviceLocator).ToArray();
             foreach (var customGraphType in customGraphTypes)
             {
                 GraphTypeTypeRegistry.Register(customGraphType.TargetType, customGraphType.GetType());
             }
-            
-            // step 2: Register all graphs, interfaces, unions etc
-            var interfaces = serviceLocator.GetAllInstances<IInterfaceGraphType>().ToArray();
-            var unions = serviceLocator.GetAllInstances<IEPiServerGraphUnion>().ToArray();
-            
+        }
+
+        private void RegisterInterfacesAndUnions(IServiceLocator serviceLocator)
+        {
+            var interfaces = GraphTypeLoader.GetGraphInterfaces(serviceLocator).ToArray();
+            var unions = GraphTypeLoader.GetGraphUnions(serviceLocator).ToArray();
+
             RegisterTypes(interfaces);
             RegisterTypes(unions);
-            
-            Query = resolver.Resolve<IRootQuery>();
         }
     }
 }

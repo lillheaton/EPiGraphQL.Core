@@ -1,5 +1,4 @@
-﻿using Eols.EPiGraphQL.Cms.Factory;
-using EPiServer.Core;
+﻿using EPiServer.Core;
 using EPiServer.ServiceLocation;
 using GraphQL.Types;
 using System.Linq;

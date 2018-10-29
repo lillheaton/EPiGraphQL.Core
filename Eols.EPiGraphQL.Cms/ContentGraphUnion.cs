@@ -1,5 +1,5 @@
-﻿using Eols.EPiGraphQL.Cms.Factory;
-using Eols.EPiGraphQL.Core;
+﻿using Eols.EPiGraphQL.Core;
+using Eols.EPiGraphQL.Core.Loader;
 using EPiServer;
 using EPiServer.Core;
 using EPiServer.DataAbstraction;
@@ -17,22 +17,19 @@ namespace Eols.EPiGraphQL.Cms
     [ServiceConfiguration(typeof(IEPiServerGraphUnion), Lifecycle = ServiceInstanceScope.Singleton)]
     public class ContentGraphUnion : UnionGraphType, IEPiServerGraphUnion
     {
-        public const string NONE_RESOLVED_GRAPH_NAME = "NoneResolvedType";
-
-        private readonly IContentTypeRepository _contentTypeRepository;
+        public const string NONE_RESOLVED_GRAPH_NAME = "NoneResolvedType";        
 
         private readonly IInterfaceGraphType _contentInterface;
         private readonly IInterfaceGraphType _localizableInterface;
 
-        public ContentGraphUnion(IContentTypeRepository contentTypeRepository)
+        public ContentGraphUnion(IContentTypeRepository contentTypeRepository, IServiceLocator serviceLocator)
         {
             Name = "ContentUnion";
             
-            _contentTypeRepository = contentTypeRepository;
-            _contentInterface = ContentTypeFactory.GetGraphInterface<IContent>();
-            _localizableInterface = ContentTypeFactory.GetGraphInterface<ILocalizable>();
+            _contentInterface = GraphTypeLoader.GetGraphInterface<IContent>(serviceLocator);
+            _localizableInterface = GraphTypeLoader.GetGraphInterface<ILocalizable>(serviceLocator);
 
-            var availableTypes = ContentTypeFactory.GetAvailableContentTypes(_contentTypeRepository);            
+            var availableTypes = ContentTypeLoader.GetAvailableEpiContentTypes(contentTypeRepository);            
 
             var blockTypes = availableTypes.Where(IsBlockType);
             var otherTypes = availableTypes.Where(x => IsBlockType(x) == false);

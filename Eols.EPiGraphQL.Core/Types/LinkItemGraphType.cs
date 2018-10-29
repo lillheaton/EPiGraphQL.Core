@@ -6,7 +6,7 @@ using EPiServer.Web.Routing;
 using GraphQL.Types;
 using Newtonsoft.Json;
 
-namespace Eols.EPiGraphQL.Cms.Types
+namespace Eols.EPiGraphQL.Core.Types
 {
     public class LinkItemGraphType : ObjectGraphType<LinkItem>
     {
