@@ -1,4 +1,5 @@
 ﻿using Eols.EPiGraphQL.Core;
+using Eols.EPiGraphQL.Core.Attributes;
 using Eols.EPiGraphQL.Core.Factory;
 using Eols.EPiGraphQL.Core.Loader;
 using EPiServer;
@@ -96,7 +97,7 @@ namespace Eols.EPiGraphQL.Cms
             var displayAttribute = tuple.attribute;
 
             // Check if it's a Block (IContentData) type
-            if (typeof(IContentData).IsAssignableFrom(propType))
+            if (typeof(IContentData).IsAssignableFrom(propType) && propType.HasAttribute<GraphHideAttribute>() == false)
             {
                 // NOTE! Assumes that all blocks that could be local blocks are already processed and resolved and inserted into the "PossibleTypes"
                 var resolvedBlockGraphType = base.PossibleTypes

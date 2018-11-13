@@ -1,4 +1,5 @@
-﻿using EPiServer.DataAbstraction;
+﻿using Eols.EPiGraphQL.Core.Attributes;
+using EPiServer.DataAbstraction;
 using GraphQL.Types;
 using GraphQL.Utilities;
 using System;
@@ -62,8 +63,8 @@ namespace Eols.EPiGraphQL.Core.Factory
 
             // Loop through epi content type properties with display attribute
             var propertiesTuple = contentType
-                .ModelType
-                ?.GetPropertiesWithAttribute<DisplayAttribute>()
+                .ModelType                
+                ?.GetPropertiesWithAttribute<DisplayAttribute>(x => x.HasAttribute<GraphHideAttribute>() == false)
                 ?? new (PropertyInfo PropertyInfo, DisplayAttribute attribute)[] { };
 
             // Create fields out of them
