@@ -4,7 +4,6 @@ using GraphQL;
 using GraphQL.Http;
 using GraphQL.Instrumentation;
 using GraphQL.Types;
-using GraphQL.Utilities;
 using GraphQL.Validation.Complexity;
 using System;
 using System.Net;
@@ -42,8 +41,6 @@ namespace Eols.EPiGraphQL.Api.Controllers
         [Route("")]
         public async Task<HttpResponseMessage> PostAsync(HttpRequestMessage request, GraphQLQuery query)
         {
-            var test = new SchemaPrinter(_schema).Print();
-
             try
             {
                 var inputs = query.Variables.ToInputs();

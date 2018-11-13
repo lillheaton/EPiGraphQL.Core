@@ -1,11 +1,11 @@
 ﻿using Eols.EPiGraphQL.Core;
+using Eols.EPiGraphQL.Core.Factory;
 using Eols.EPiGraphQL.Core.Loader;
 using EPiServer;
 using EPiServer.Core;
 using EPiServer.DataAbstraction;
 using EPiServer.ServiceLocation;
 using GraphQL.Types;
-using GraphQL.Utilities;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -21,6 +21,7 @@ namespace Eols.EPiGraphQL.Cms
 
         private readonly IInterfaceGraphType _contentInterface;
         private readonly IInterfaceGraphType _localizableInterface;
+        private readonly ObjectGraphTypeFactory _objectGraphTypeFactory;
 
         public ContentGraphUnion(IContentTypeRepository contentTypeRepository, IServiceLocator serviceLocator)
         {
@@ -28,6 +29,7 @@ namespace Eols.EPiGraphQL.Cms
             
             _contentInterface = GraphTypeLoader.GetGraphInterface<IContent>(serviceLocator);
             _localizableInterface = GraphTypeLoader.GetGraphInterface<ILocalizable>(serviceLocator);
+            _objectGraphTypeFactory = new ObjectGraphTypeFactory();
 
             var availableTypes = ContentTypeLoader.GetAvailableEpiContentTypes(contentTypeRepository);            
 
@@ -43,10 +45,21 @@ namespace Eols.EPiGraphQL.Cms
                 AddPossibleType(graph);
             }
 
+            // Create a dummy content Type for none resolved graphs
+            var dummyContentType = new ContentType { Name = NONE_RESOLVED_GRAPH_NAME };
+
             var otherGraphs = 
                 CreateGraphs(otherTypes)
                 .Concat(
-                    new[] { CreateGraphFromType(new ContentType { Name = NONE_RESOLVED_GRAPH_NAME }, _contentInterface) }
+                    new[] 
+                    {
+                        _objectGraphTypeFactory.CreateGraphFromType(
+                            dummyContentType,
+                            new[] { _contentInterface },
+                            (target) => IsTypeOf(target, dummyContentType),
+                            FallbackSetFields
+                        )
+                    }
                 );
             
             foreach (var graph in otherGraphs)
@@ -58,41 +71,37 @@ namespace Eols.EPiGraphQL.Cms
         private static bool IsBlockType(ContentType contentType) 
             => typeof(BlockData).IsAssignableFrom(contentType.ModelType);
 
-        /// <summary>
-        /// NOTE! Converts block types first so they can be used as local blocks
-        /// </summary>
-        /// <returns></returns>
-        private IEnumerable<ObjectGraphType> CreateGraphs(IEnumerable<ContentType> contentTypes)
+        private bool IsTypeOf(object target, ContentType contentType)
         {
-            return contentTypes.Select(contentType =>
+            bool isTypeOf = target.GetOriginalType() == contentType.ModelType;
+
+            if (!isTypeOf && contentType.ModelType == null)
             {
-                if (contentType.ModelType != null && typeof(PageData).IsAssignableFrom(contentType.ModelType))
-                {
-                    return CreateGraphFromType(contentType, _contentInterface, _localizableInterface);
-                }
-                return CreateGraphFromType(contentType, _contentInterface);
-            });
+                bool hasAnyType = base.PossibleTypes
+                    .Any(x =>
+                        x.HasMetadata("type") &&
+                        x.GetMetadata<Type>("type").Equals(target.GetOriginalType())
+                    );
+
+                if (hasAnyType == false)
+                    return true;
+            }
+
+            return isTypeOf;
         }
 
-        private void SetFields(ref ObjectGraphType objectGraph, (PropertyInfo propertyInfo, DisplayAttribute attribute) tuple)
+        private void FallbackSetFields(ref ObjectGraphType objectGraph, (PropertyInfo propertyInfo, DisplayAttribute attribute) tuple)
         {
             var propType = tuple.propertyInfo.PropertyType;
             var displayAttribute = tuple.attribute;
-
-            // Check to see if the type is already registred in the GraphTypeRegistry
-            var resolvedType = GraphTypeTypeRegistry.Get(propType);
-            if (resolvedType != null)
-            {
-                objectGraph.Field(resolvedType, tuple.propertyInfo.Name, tuple.attribute.Description);
-            }
 
             // Check if it's a Block (IContentData) type
             if (typeof(IContentData).IsAssignableFrom(propType))
             {
                 // NOTE! Assumes that all blocks that could be local blocks are already processed and resolved and inserted into the "PossibleTypes"
                 var resolvedBlockGraphType = base.PossibleTypes
-                    .FirstOrDefault(x => 
-                        x.HasMetadata("type") && 
+                    .FirstOrDefault(x =>
+                        x.HasMetadata("type") &&
                         ((System.Type)x.Metadata["type"]).Equals(propType)
                     );
 
@@ -102,65 +111,33 @@ namespace Eols.EPiGraphQL.Cms
                         Name = tuple.propertyInfo.Name,
                         Description = displayAttribute.Description,
                         ResolvedType = resolvedBlockGraphType
-                    });                
+                    });
             }
+
+            // Otherwise do nothing
         }
 
-        private ObjectGraphType CreateGraphFromType(ContentType contentType, params IInterfaceGraphType[] interfaces)
+        /// <summary>
+        /// NOTE! Converts block types first so they can be used as local blocks
+        /// </summary>
+        /// <returns></returns>
+        private IEnumerable<ObjectGraphType> CreateGraphs(IEnumerable<ContentType> contentTypes)
         {
-            var graph = new ObjectGraphType();
-            graph.Name = contentType.Name;
-
-            if(contentType.ModelType != null)
+            return contentTypes.Select(contentType =>
             {
-                graph.Metadata["type"] = contentType.ModelType;
-            }
-
-            // Add all interface fields to graph
-            foreach (var field in interfaces.SelectMany(x => x.Fields))
-            {
-                graph.AddField(field);
-            }
-
-            // Loop through epi content type properties with display attribute
-            var propertiesTuple = contentType
-                .ModelType
-                ?.GetPropertiesWithAttribute<DisplayAttribute>() 
-                ?? new (PropertyInfo PropertyInfo, DisplayAttribute attribute)[] { } ;
-            
-            // Create fields out of them
-            foreach (var tuple in propertiesTuple)
-            {
-                SetFields(ref graph, tuple);              
-            }
-
-            // Method to check if is type
-            graph.IsTypeOf = target =>
-            {
-                bool isTypeOf = target.GetOriginalType() == contentType.ModelType;
-
-                if(!isTypeOf && contentType.ModelType == null)
+                var interfaces = new List<IInterfaceGraphType> { _contentInterface };
+                if (contentType.ModelType != null && typeof(PageData).IsAssignableFrom(contentType.ModelType))
                 {
-                    bool hasAnyType = base.PossibleTypes
-                        .Any(x =>
-                            x.HasMetadata("type") &&
-                            x.GetMetadata<Type>("type").Equals(target.GetOriginalType())
-                        );
-
-                    if (hasAnyType == false)
-                        return true;
+                    interfaces.Add(_localizableInterface);
                 }
-
-                return isTypeOf;
-            };
-
-            foreach (var @interface in interfaces)
-            {
-                // Add resolved interface to graph type
-                graph.AddResolvedInterface(@interface);
-            }
-            
-            return graph;
+                
+                return _objectGraphTypeFactory.CreateGraphFromType(
+                    contentType,
+                    interfaces,
+                    (target) => IsTypeOf(target, contentType),
+                    FallbackSetFields
+                );
+            });
         }        
     }
 }
