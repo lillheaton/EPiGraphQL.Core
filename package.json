@@ -1,20 +1,14 @@
 {
-  "name": "Eols-EPiGraphQL",
+  "name": "Eols.EPiGraphQL.Core",
   "version": "0.5.0",
   "main": "index.js",
   "repository": "git@github.com:lillheaton/Eols.EPiGraphQL.git",
   "author": "Emil Olsson",
   "license": "MIT",
   "scripts": {
-    "build": "babel-node tools/build.js",
-    "build-release": "set CONFIGURATION=Release&& babel-node tools/build.js --proj ./Eols.EPiGraphQl.Core",
-    "build-ci": "set CONFIGURATION=Release&& yarn&& babel-node tools/build.js ci --proj ./Eols.EPiGraphQl.Core",
-    "build-nuget": "babel-node tools/build.js nuget",
-    "build-nuspec": "babel-node tools/build.js nuspec",
-    "build-artifacts": "babel-node tools/build.js artifacts",
-    "release": "set CONFIGURATION=Release&& babel-node tools/build.js ci --proj ./Eols.EPiGraphQl.Core",
-    "restore": "babel-node tools/build.js restore",
-    "setVersion": "babel-node tools/build.js setVersion"
+    "build:release": "set CONFIGURATION=Release&& babel-node tools/build.js",
+    "build:ci": "set CONFIGURATION=Release&& yarn&& babel-node tools/build.js ci",
+    "release": "set CONFIGURATION=Release&& babel-node tools/build.js ci"
   },
   "devDependencies": {
     "@babel/cli": "^7.1.5",

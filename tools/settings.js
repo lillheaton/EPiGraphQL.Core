@@ -14,16 +14,14 @@ const assemblyVersion = includeRevision
   : `${version}.0`
 const CI = process.env.CI && process.env.CI.toString().toLowerCase() === 'true'
 
-const pathArgIndex = process.argv.findIndex(x => x === '--proj')
-
 const artifactsPath = path.resolve('./artifacts')
-const solutionPath = path.resolve('./Eols.EPiGraphQL.sln')
-const projectSourcePath = path.resolve(process.argv[pathArgIndex + 1])
+const solutionPath = path.resolve('./Eols.EPiGraphQL.Core.sln')
+const projectSourcePath = path.resolve('./src')
 const cleanPaths = [`${projectSourcePath}/obj`, `${projectSourcePath}/bin`]
 
 const versionInfo = {
-  description: `${path.basename(projectSourcePath)} EPiServer Tool`,
-  productName: path.basename(projectSourcePath),
+  description: 'Eols.EPiGraphQL.Core an EPiServer tool',
+  productName: 'Eols.EPiGraphQL.Core',
   copyright: 'Copyright 2018 Emil Olsson',
   version: assemblyVersion,
   fileVersion: assemblyVersion,
