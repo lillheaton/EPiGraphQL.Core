@@ -10,9 +10,9 @@ os: Visual Studio 2017
 environment:
   CI: true
 
-# nuget:
-#   account_feed: true
-#   project_feed: true
+nuget:
+  account_feed: true
+  project_feed: true
 #   disable_publish_on_pr: true
 
 install:
