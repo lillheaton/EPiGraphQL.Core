@@ -10,26 +10,25 @@ using System.Reflection;
 
 namespace Eols.EPiGraphQL.Core.Factory
 {
-    public class ObjectGraphTypeFactory
+  public class ObjectGraphTypeFactory
     {
         public delegate void FieldCreationFallback(
             ref ObjectGraphType objectGraph, 
-            (PropertyInfo propertyInfo, DisplayAttribute attribute) fieldInfo
+            (PropertyInfo propertyInfo, string description) fieldInfo
         );        
         
         private void AddField(
             ref ObjectGraphType objectGraph, 
-            (PropertyInfo propertyInfo, DisplayAttribute attribute) tuple,
+            (PropertyInfo propertyInfo, string description) tuple,
             FieldCreationFallback fallbackFieldCreator = null)
         {
-            var propType = tuple.propertyInfo.PropertyType;
-            var displayAttribute = tuple.attribute;
+            var propType = tuple.propertyInfo.PropertyType;            
 
             // Check to see if the type is already registred in the GraphTypeRegistry
             var resolvedType = GraphTypeTypeRegistry.Get(propType);
             if (resolvedType != null)
             {
-                objectGraph.Field(resolvedType, tuple.propertyInfo.Name, tuple.attribute.Description);
+                objectGraph.Field(resolvedType, tuple.propertyInfo.Name, tuple.description);
             }
 
             // We did not find the type in GraphTypeTypeRegistery - initiate fallback
@@ -63,9 +62,15 @@ namespace Eols.EPiGraphQL.Core.Factory
 
             // Loop through epi content type properties with display attribute
             var propertiesTuple = contentType
-                .ModelType                
-                ?.GetPropertiesWithAttribute<DisplayAttribute>(x => x.HasAttribute<GraphHideAttribute>() == false)
-                ?? new (PropertyInfo PropertyInfo, DisplayAttribute attribute)[] { };
+              .PropertyDefinitions
+              .Where(propDefinition => propDefinition.ExistsOnModel)
+              .Select(propDefinition => contentType.ModelType.GetProperty(propDefinition.Name))
+              .Where(x => x.HasAttribute<GraphHideAttribute>() == false)
+              .Select(propertyInfo =>
+                {                  
+                  var attr = propertyInfo.GetCustomAttribute<DisplayAttribute>();
+                  return (propertyInfo, attr?.Description);
+                });
 
             // Create fields out of them
             foreach (var tuple in propertiesTuple)

@@ -13,7 +13,7 @@ namespace Eols.EPiGraphQL.Core
         {
             var serviceLocator = resolver.Resolve<IServiceLocator>();
 
-            // Step 1: Register all types so we can (x => x.contentarea)
+            // Step 1: Register all types so we can for example use (x => x.contentarea)
             RegisterCustomGraphTypes(serviceLocator);
 
             // step 2: Register all graphs, interfaces, unions etc
