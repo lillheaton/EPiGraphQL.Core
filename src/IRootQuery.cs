@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 
-namespace Eols.EPiGraphQL.Core
+namespace EPiGraphQL.Core
 {
     public interface IRootQuery : IObjectGraphType
     {

@@ -7,7 +7,7 @@ using System;
 using System.Globalization;
 using System.Linq;
 
-namespace Eols.EPiGraphQL
+namespace EPiGraphQL
 {
     public static class ContentReferenceEx
     {

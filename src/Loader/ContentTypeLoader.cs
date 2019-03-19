@@ -1,9 +1,9 @@
-﻿using Eols.EPiGraphQL.Core.Attributes;
+﻿using EPiGraphQL.Core.Attributes;
 using EPiServer.DataAbstraction;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Eols.EPiGraphQL.Core.Loader
+namespace EPiGraphQL.Core.Loader
 {
     public class ContentTypeLoader
     {

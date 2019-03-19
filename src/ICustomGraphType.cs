@@ -1,7 +1,7 @@
 ﻿using GraphQL.Types;
 using System;
 
-namespace Eols.EPiGraphQL.Core
+namespace EPiGraphQL.Core
 {
     public interface ICustomGraphType : IGraphType
     {

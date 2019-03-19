@@ -1,4 +1,4 @@
-﻿namespace Eols.EPiGraphQL.Core
+﻿namespace EPiGraphQL.Core
 {
     public static class Constants
     {

@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Eols.EPiGraphQL.Core.Loader
+namespace EPiGraphQL.Core.Loader
 {
     public class GraphTypeLoader
     {

@@ -5,13 +5,13 @@ Adding [Facebook's GraphQL](https://github.com/facebook/graphql) for [EPiServer'
 This project builds on top of [GraphQL .NET](https://github.com/graphql-dotnet/graphql-dotnet) library written by [Joe McBride](https://github.com/joemcbride) (MIT licence)
 
 ## Installation
-You can install the latest version via [NuGet](https://www.nuget.org/packages/Eols.EPiGraphQL.Core/).
+You can install the latest version via [NuGet](https://www.nuget.org/packages/EPiGraphQL.Core/).
 
-`PM> Install-Package Eols.EPiGraphQL.Core`
+`PM> Install-Package EPiGraphQL.Core`
 
 ## Basic Usage
 This is the core library for the following projects
- * [Eols.EPiGraphQL.Cms](https://github.com/lillheaton/Eols.EPiGraphQL.Cms)
+ * [EPiGraphQL.Cms](https://github.com/lillheaton/EPiGraphQL.Cms)
 
 #### Resolve dependencies
 You'll need to resolve GraphQL.IDependencyResolver with EPiServers ServiceLocator

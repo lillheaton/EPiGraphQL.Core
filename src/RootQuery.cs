@@ -1,7 +1,7 @@
 ﻿using EPiServer.ServiceLocation;
 using GraphQL.Types;
 
-namespace Eols.EPiGraphQL.Core
+namespace EPiGraphQL.Core
 {
     [ServiceConfiguration(typeof(IRootQuery), Lifecycle = ServiceInstanceScope.Singleton)]
     public class RootQuery : ObjectGraphType, IRootQuery

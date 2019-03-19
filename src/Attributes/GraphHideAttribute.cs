@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Eols.EPiGraphQL.Core.Attributes
+namespace EPiGraphQL.Core.Attributes
 {
     public class GraphHideAttribute : Attribute
     {

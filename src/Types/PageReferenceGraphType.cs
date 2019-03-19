@@ -1,11 +1,11 @@
-﻿using Eols.EPiGraphQL.Core.Loader;
+﻿using EPiGraphQL.Core.Loader;
 using EPiServer;
 using EPiServer.Core;
 using EPiServer.ServiceLocation;
 using GraphQL.Types;
 using System;
 
-namespace Eols.EPiGraphQL.Core.Types
+namespace EPiGraphQL.Core.Types
 {
     [ServiceConfiguration(typeof(ICustomGraphType), Lifecycle = ServiceInstanceScope.Singleton)]
     class PageReferenceGraphType : ObjectGraphType<PageReference>, ICustomGraphType

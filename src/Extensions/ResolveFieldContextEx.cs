@@ -1,10 +1,10 @@
-﻿using Eols.EPiGraphQL.Core;
+﻿using EPiGraphQL.Core;
 using EPiServer.Core;
 using GraphQL.Types;
 using System;
 using System.Globalization;
 
-namespace Eols.EPiGraphQL
+namespace EPiGraphQL
 {
     public static class ResolveFieldContextEx
     {

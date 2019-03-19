@@ -1,4 +1,4 @@
-﻿using Eols.EPiGraphQL.Core.Attributes;
+﻿using EPiGraphQL.Core.Attributes;
 using EPiServer.DataAbstraction;
 using GraphQL.Types;
 using GraphQL.Utilities;
@@ -8,7 +8,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Reflection;
 
-namespace Eols.EPiGraphQL.Core.Factory
+namespace EPiGraphQL.Core.Factory
 {
   public class ObjectGraphTypeFactory
     {

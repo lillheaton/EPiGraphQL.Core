@@ -1,6 +1,6 @@
 ﻿using GraphQL.Types;
 
-namespace Eols.EPiGraphQL.Core
+namespace EPiGraphQL.Core
 {
     public interface IEPiServerGraphUnion : IGraphType
     {
