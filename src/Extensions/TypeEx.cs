@@ -22,5 +22,14 @@ namespace EPiGraphQL
         {
             return type.GetCustomAttributes<TAttribute>(true).Any();
         }
+
+        public static bool HasAttributeWithConditionOrTrue<TAttribute>(this Type type, Func<TAttribute, bool> filter) where TAttribute : Attribute
+        {
+            var attribute = type.GetCustomAttributes<TAttribute>().FirstOrDefault();
+            if (attribute == null)
+                return true;
+
+            return filter(attribute);
+        }
     }
 }

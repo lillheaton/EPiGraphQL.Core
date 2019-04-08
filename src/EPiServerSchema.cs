@@ -10,7 +10,7 @@ namespace EPiGraphQL.Core
     public class EPiServerSchema : Schema
     {
         public EPiServerSchema(GraphQL.IDependencyResolver resolver) : base(resolver)
-        {
+        {            
             var serviceLocator = resolver.Resolve<IServiceLocator>();
 
             // Step 1: Register all types so we can for example use (x => x.contentarea)

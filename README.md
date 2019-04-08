@@ -34,8 +34,25 @@ public class TestOverrideGraphType : ScalarGraphType, ICustomGraphType
 }
 ```
 
-#### Hide Content Types or Properties
-Set GraphHideAttribute to either Class or specific properties
+#### Hide or Change name on Content Types or Properties
+You can use GraphTypeAttribute on class to change graph name or hide it and you can use GraphPropertyAttribute to change name on property or hide
+
+```cs
+[GraphType(GraphName = "MyStartPage", Hide = false))]
+[ContentType(DisplayName = "Start page")]
+public class StartPage : PageData
+{
+    [Display(Name = "Meta Title", Order = 5)]
+    public virtual virtual string MetaTitle { get; set; }
+
+    [Display(Name = "Meta Description", Order = 7)]
+    public virtual string MetaDescription { get; set; }
+
+    [GraphProperty(PropertyName = "MySettings", Hide = false)]
+    [Display(Name = "Setting", Order = 10)]
+    public virtual Setting Settings { get; set; }
+}
+```
 
 #### Adding your own Graphs to Schema
 This projects creates and sets up the Schema with a "root" query. You can extend this graph with more fields. The following show an example.

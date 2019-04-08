@@ -20,13 +20,19 @@ namespace EPiGraphQL.Core.Types
                     new QueryArgument<BooleanGraphType>
                     {
                         DefaultValue = false,
-                        Name = "absoluteUrl"
+                        Name = Constants.Arguments.ARGUMENT_ABSOLUTE_URL
+                    },
+                    new QueryArgument<BooleanGraphType>()
+                    {
+                        Name = Constants.Arguments.ARGUMENT_ALLOWFALLBACK_LANG,
+                        Description = "Allow Fallback Language",
+                        DefaultValue = true
                     }
                 ),
                 resolve: x => 
                 {
                     var locale = x.GetLocaleFromArgument();
-                    var absoluteUrl = x.GetArgument<bool>("absoluteUrl");
+                    var absoluteUrl = x.GetArgument<bool>(Constants.Arguments.ARGUMENT_ABSOLUTE_URL);
                     var permanentLinkMap = permanentLinkMapper.Find(new UrlBuilder(x.Source.Href));
 
                     if(permanentLinkMap == null)
@@ -36,8 +42,8 @@ namespace EPiGraphQL.Core.Types
 
                     var localizable = contentLoader
                         .Get<IContent>(
-                            permanentLinkMap.ContentReference, 
-                            new LoaderOptions { LanguageLoaderOption.Fallback(locale) }
+                            permanentLinkMap.ContentReference,
+                            x.CreateLoaderOptionsFromAgruments()
                         ) as ILocale;
 
                     if(localizable != null)

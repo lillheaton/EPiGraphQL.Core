@@ -13,7 +13,7 @@ namespace EPiGraphQL.Core.Loader
                 .List()
                 .Where(x => 
                     x.ModelType != null && 
-                    x.ModelType.HasAttribute<GraphHideAttribute>() == false
+                    x.ModelType.HasAttributeWithConditionOrTrue<GraphTypeAttribute>(attr => attr.Hide == false)
                 );
         }        
     }
