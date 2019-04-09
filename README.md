@@ -1,17 +1,18 @@
-[![Build status](https://ci.appveyor.com/api/projects/status/xmugcagkt9k1k5u9?svg=true)](https://ci.appveyor.com/project/lillheaton/eols-epigraphql-core)
+[![Build status](https://ci.appveyor.com/api/projects/status/xmugcagkt9k1k5u9?svg=true)](https://ci.appveyor.com/project/lillheaton/eols-Graphify.EPiServer-core)
+[![NuGet](https://img.shields.io/nuget/v/Graphify.EPiServer.Core.svg)](https://www.nuget.org/packages/Graphify.EPiServer.Core/)
 
 Adding [Facebook's GraphQL](https://github.com/facebook/graphql) for [EPiServer's](https://www.episerver.com/) platform. This tool automates creation of Graphs based on the defined available content types.
 
 This project builds on top of [GraphQL .NET](https://github.com/graphql-dotnet/graphql-dotnet) library written by [Joe McBride](https://github.com/joemcbride) (MIT licence)
 
 ## Installation
-You can install the latest version via [NuGet](https://www.nuget.org/packages/EPiGraphQL.Core/).
+You can install the latest version via [NuGet](https://www.nuget.org/packages/Graphify.EPiServer.Core/).
 
-`PM> Install-Package EPiGraphQL.Core`
+`PM> Install-Package Graphify.EPiServer.Core`
 
 ## Basic Usage
 This is the core library for the following projects
- * [EPiGraphQL.Cms](https://github.com/lillheaton/EPiGraphQL.Cms)
+ * [Graphify.EPiServer.Cms](https://github.com/lillheaton/Graphify.EPiServer.Cms)
 
 #### Resolve dependencies
 You'll need to resolve GraphQL.IDependencyResolver with EPiServers ServiceLocator

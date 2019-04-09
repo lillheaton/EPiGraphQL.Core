@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace EPiGraphQL.Core.Attributes
+namespace Graphify.EPiServer.Core.Attributes
 {
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = false)]
     public class GraphTypeAttribute : Attribute

@@ -7,7 +7,7 @@ using System;
 using System.Globalization;
 using System.Linq;
 
-namespace EPiGraphQL
+namespace Graphify.EPiServer
 {
     public static class ContentReferenceEx
     {

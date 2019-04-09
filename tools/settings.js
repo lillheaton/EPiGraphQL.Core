@@ -1,6 +1,6 @@
 import path from 'path'
-import moment from 'moment'
-import pjson from '../package.json'
+import moment from '../node_modules/moment/moment'
+import pjson from '../package.json.js'
 
 const target = process.env.CONFIGURATION || 'Debug'
 const buildNumber = process.env.APPVEYOR_BUILD_NUMBER
@@ -15,13 +15,13 @@ const assemblyVersion = includeRevision
 const CI = process.env.CI && process.env.CI.toString().toLowerCase() === 'true'
 
 const artifactsPath = path.resolve('./artifacts')
-const solutionPath = path.resolve('./EPiGraphQL.Core.sln')
+const solutionPath = path.resolve('./Graphify.EPiServer.Core.sln')
 const projectSourcePath = path.resolve('./src')
 const cleanPaths = [`${projectSourcePath}/obj`, `${projectSourcePath}/bin`]
 
 const versionInfo = {
-  description: 'EPiGraphQL.Core an EPiServer tool',
-  productName: 'EPiGraphQL.Core',
+  description: 'Graphify.EPiServer.Core an EPiServer tool',
+  productName: 'Graphify.EPiServer.Core',
   copyright: 'Copyright 2018 Emil Olsson',
   version: assemblyVersion,
   fileVersion: assemblyVersion,

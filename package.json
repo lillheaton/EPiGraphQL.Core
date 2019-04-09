@@ -1,11 +1,11 @@
 {
-  "name": "EPiGraphQL.Core",
+  "name": "Graphify.EPiServer.Core",
   "version": "0.7.0",
   "main": "index.js",
-  "repository": "git@github.com:lillheaton/EPiGraphQL.Core.git",
+  "repository": "git@github.com:lillheaton/Graphify.EPiServer.Core.git",
   "author": "Emil Olsson",
   "license": "MIT",
-  "homepage": "https://github.com/lillheaton/EPiGraphQL.Core",
+  "homepage": "https://github.com/lillheaton/Graphify.EPiServer.Core",
   "scripts": {
     "build:release": "set CONFIGURATION=Release&& babel-node tools/build.js",
     "build:ci": "set CONFIGURATION=Release&& yarn&& babel-node tools/build.js ci",

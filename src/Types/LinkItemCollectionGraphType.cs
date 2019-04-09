@@ -3,7 +3,7 @@ using EPiServer.SpecializedProperties;
 using GraphQL.Types;
 using System;
 
-namespace EPiGraphQL.Core.Types
+namespace Graphify.EPiServer.Core.Types
 {
     [ServiceConfiguration(typeof(ICustomGraphType), Lifecycle = ServiceInstanceScope.Singleton)]
     public class LinkItemCollectionGraphType : ObjectGraphType<LinkItemCollection>, ICustomGraphType

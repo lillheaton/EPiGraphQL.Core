@@ -1,9 +1,9 @@
-﻿using EPiGraphQL.Core.Attributes;
+﻿using Graphify.EPiServer.Core.Attributes;
 using EPiServer.DataAbstraction;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace EPiGraphQL.Core.Loader
+namespace Graphify.EPiServer.Core.Loader
 {
     public class ContentTypeLoader
     {

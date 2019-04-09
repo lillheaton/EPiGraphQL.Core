@@ -5,7 +5,7 @@ using GraphQL.Types.Relay.DataObjects;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace EPiGraphQL.Core.Factory
+namespace Graphify.EPiServer.Core.Factory
 {
     public class ContentConnectionFactory
     {

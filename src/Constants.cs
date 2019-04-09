@@ -1,4 +1,4 @@
-﻿namespace EPiGraphQL.Core
+﻿namespace Graphify.EPiServer.Core
 {
     public static class Constants
     {

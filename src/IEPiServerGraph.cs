@@ -1,6 +1,6 @@
 ﻿using GraphQL.Types;
 
-namespace EPiGraphQL.Core
+namespace Graphify.EPiServer.Core
 {
     public interface IEPiServerGraph : IObjectGraphType
     {

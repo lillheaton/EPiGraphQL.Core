@@ -1,10 +1,10 @@
-﻿using EPiGraphQL.Core.Loader;
+﻿using Graphify.EPiServer.Core.Loader;
 using EPiServer.ServiceLocation;
 using GraphQL.Types;
 using GraphQL.Utilities;
 using System.Linq;
 
-namespace EPiGraphQL.Core
+namespace Graphify.EPiServer.Core
 {
     [ServiceConfiguration(typeof(ISchema), Lifecycle = ServiceInstanceScope.Singleton)]
     public class EPiServerSchema : Schema

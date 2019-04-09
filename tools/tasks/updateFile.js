@@ -1,6 +1,6 @@
 import fs from 'fs'
 import path from 'path'
-import { log } from 'simple-make/lib/logUtils'
+import { log } from '../../node_modules/simple-make/lib/logUtils'
 
 export default function updateFile(note, fileName, replacer) {
   return new Promise((resolve, reject) => {

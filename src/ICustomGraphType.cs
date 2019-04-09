@@ -1,7 +1,7 @@
 ﻿using GraphQL.Types;
 using System;
 
-namespace EPiGraphQL.Core
+namespace Graphify.EPiServer.Core
 {
     public interface ICustomGraphType : IGraphType
     {

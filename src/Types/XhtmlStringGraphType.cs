@@ -4,7 +4,7 @@ using GraphQL.Language.AST;
 using GraphQL.Types;
 using System;
 
-namespace EPiGraphQL.Core.Types
+namespace Graphify.EPiServer.Core.Types
 {
     //https://github.com/graphql-dotnet/graphql-dotnet/issues/787
 

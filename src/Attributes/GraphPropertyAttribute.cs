@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace EPiGraphQL.Core.Attributes
+namespace Graphify.EPiServer.Core.Attributes
 {
     [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field, AllowMultiple = false)]
     public class GraphPropertyAttribute : Attribute

@@ -1,11 +1,11 @@
-﻿using EPiGraphQL.Core.Loader;
+﻿using Graphify.EPiServer.Core.Loader;
 using EPiServer.Core;
 using EPiServer.ServiceLocation;
 using GraphQL.Types;
 using System;
 using System.Linq;
 
-namespace EPiGraphQL.Core.Types
+namespace Graphify.EPiServer.Core.Types
 {
     [ServiceConfiguration(typeof(ICustomGraphType), Lifecycle = ServiceInstanceScope.Singleton)]
     public class ContentAreaGraphType : ObjectGraphType<ContentArea>, ICustomGraphType

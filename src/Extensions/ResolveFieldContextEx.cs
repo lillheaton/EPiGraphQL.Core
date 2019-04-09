@@ -1,11 +1,11 @@
-﻿using EPiGraphQL.Core;
-using EPiGraphQL.Core.Factory;
+﻿using Graphify.EPiServer.Core;
+using Graphify.EPiServer.Core.Factory;
 using EPiServer.Core;
 using GraphQL.Types;
 using System;
 using System.Globalization;
 
-namespace EPiGraphQL
+namespace Graphify.EPiServer
 {
     public static class ResolveFieldContextEx
     {

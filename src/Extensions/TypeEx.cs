@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
-namespace EPiGraphQL
+namespace Graphify.EPiServer
 {
     public static class TypeEx
     {

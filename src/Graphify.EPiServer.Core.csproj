@@ -5,6 +5,7 @@
     <VersionPrefix>0.5.0</VersionPrefix>
     <Authors>Emil Olsson</Authors>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <PackageTags>EPiServer;GraphQL;json;api</PackageTags>
     <GenerateAssemblyDescriptionAttribute>false</GenerateAssemblyDescriptionAttribute>
     <GenerateAssemblyTitleAttribute>false</GenerateAssemblyTitleAttribute>
     <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
