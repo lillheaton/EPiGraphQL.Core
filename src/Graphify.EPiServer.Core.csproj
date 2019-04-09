@@ -6,6 +6,8 @@
     <Authors>Emil Olsson</Authors>
     <TargetFramework>netstandard2.0</TargetFramework>
     <PackageTags>EPiServer;GraphQL;json;api</PackageTags>
+    <PackageProjectUrl>https://github.com/lillheaton/Graphify.EPiServer.Core</PackageProjectUrl>
+    <PackageLicenseUrl>https://github.com/lillheaton/Graphify.EPiServer.Core/blob/master/License.md</PackageLicenseUrl>
     <GenerateAssemblyDescriptionAttribute>false</GenerateAssemblyDescriptionAttribute>
     <GenerateAssemblyTitleAttribute>false</GenerateAssemblyTitleAttribute>
     <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
