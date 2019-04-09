@@ -1,6 +1,6 @@
 import path from 'path'
-import moment from '../node_modules/moment/moment'
-import pjson from '../package.json.js'
+import moment from 'moment'
+import pjson from '../package.json'
 
 const target = process.env.CONFIGURATION || 'Debug'
 const buildNumber = process.env.APPVEYOR_BUILD_NUMBER
