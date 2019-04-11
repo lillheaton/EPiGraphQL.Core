@@ -30,6 +30,7 @@ namespace Graphify.EPiServer.Core.Types
                     .Select(item
                         => item.GetContent()
                     )
+                    .FilterHiddenGraphTypes()
                 );            
         }
     }

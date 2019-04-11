@@ -4,6 +4,7 @@ using EPiServer.Core;
 using EPiServer.ServiceLocation;
 using GraphQL.Types;
 using System;
+using Graphify.EPiServer.Core.Filters;
 
 namespace Graphify.EPiServer.Core.Types
 {
@@ -23,7 +24,8 @@ namespace Graphify.EPiServer.Core.Types
             Field(contentInterface.GetType(),
                 "Content",
                 resolve: x => {
-                    return contentLoader.Get<IContent>(x.Source);                    
+                    var content = contentLoader.Get<IContent>(x.Source);
+                    return GraphTypeFilter.ShouldFilter(content) ? null : content;
                 });
         }
     }

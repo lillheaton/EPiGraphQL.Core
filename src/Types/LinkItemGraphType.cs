@@ -3,6 +3,7 @@ using EPiServer.Core;
 using EPiServer.SpecializedProperties;
 using EPiServer.Web;
 using EPiServer.Web.Routing;
+using Graphify.EPiServer.Core.Filters;
 using GraphQL.Types;
 using Newtonsoft.Json;
 
@@ -40,11 +41,18 @@ namespace Graphify.EPiServer.Core.Types
                         return urlResolver.GetUrl(x.Source.Href);
                     }
 
-                    var localizable = contentLoader
+                    var content = contentLoader
                         .Get<IContent>(
                             permanentLinkMap.ContentReference,
                             x.CreateLoaderOptionsFromAgruments()
-                        ) as ILocale;
+                        );
+
+                    var localizable = content as ILocale;
+
+                    if (content != null && GraphTypeFilter.ShouldFilter(content))
+                    {
+                        return null;
+                    }
 
                     if(localizable != null)
                     {

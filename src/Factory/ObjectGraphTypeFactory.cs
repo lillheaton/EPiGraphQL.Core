@@ -1,5 +1,5 @@
-﻿using Graphify.EPiServer.Core.Attributes;
-using EPiServer.DataAbstraction;
+﻿using EPiServer.DataAbstraction;
+using Graphify.EPiServer.Core.Attributes;
 using GraphQL.Types;
 using GraphQL.Utilities;
 using System;
@@ -71,7 +71,7 @@ namespace Graphify.EPiServer.Core.Factory
               .PropertyDefinitions
               .Where(propDefinition => propDefinition.ExistsOnModel && contentType.ModelType.GetProperty(propDefinition.Name) != null)
               .Select(propDefinition => contentType.ModelType.GetProperty(propDefinition.Name))
-              .Where(x => x.HasAttributeWithConditionOrTrue<GraphPropertyAttribute>(attr => attr.Hide == false))
+              .FilterHiddenProperties()
               .Select(propertyInfo =>
               {
                   var attr = propertyInfo.GetCustomAttribute<DisplayAttribute>();

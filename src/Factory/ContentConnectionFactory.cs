@@ -31,7 +31,8 @@ namespace Graphify.EPiServer.Core.Factory
                     loaderOptions,
                     startIndex,
                     maxRows
-                );
+                )
+                .FilterHiddenGraphTypes();
 
             if(items.Count() < maxRows)
             {
@@ -45,6 +46,7 @@ namespace Graphify.EPiServer.Core.Factory
                     startIndex,
                     1
                 )
+                .FilterHiddenGraphTypes()
                 .Any();
 
             return items;

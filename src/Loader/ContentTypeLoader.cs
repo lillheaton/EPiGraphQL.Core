@@ -1,5 +1,5 @@
-﻿using Graphify.EPiServer.Core.Attributes;
-using EPiServer.DataAbstraction;
+﻿using EPiServer.DataAbstraction;
+using Graphify.EPiServer.Core.Filters;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -12,8 +12,7 @@ namespace Graphify.EPiServer.Core.Loader
             return contentTypeRepository
                 .List()
                 .Where(x => 
-                    x.ModelType != null && 
-                    x.ModelType.HasAttributeWithConditionOrTrue<GraphTypeAttribute>(attr => attr.Hide == false)
+                    x.ModelType != null && !GraphTypeFilter.ShouldFilter(x.ModelType)
                 );
         }        
     }

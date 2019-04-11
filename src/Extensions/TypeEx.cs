@@ -31,5 +31,14 @@ namespace Graphify.EPiServer
 
             return filter(attribute);
         }
+
+        public static bool HasAttributeWithCondition<TAttribute>(this Type type, Func<TAttribute, bool> filter, bool noAttributeReturn = false) where TAttribute : Attribute
+        {
+            var attribute = type.GetCustomAttributes<TAttribute>().FirstOrDefault();
+            if (attribute == null)
+                return noAttributeReturn;
+
+            return filter(attribute);
+        }
     }
 }

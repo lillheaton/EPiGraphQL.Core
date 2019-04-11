@@ -1,5 +1,4 @@
 [![Build status](https://ci.appveyor.com/api/projects/status/6xkwj3bsj678rrba?svg=true)](https://ci.appveyor.com/project/lillheaton/graphify-episerver-core)
-
 [![NuGet](https://img.shields.io/nuget/v/Graphify.EPiServer.Core.svg)](https://www.nuget.org/packages/Graphify.EPiServer.Core/)
 
 Adding [Facebook's GraphQL](https://github.com/facebook/graphql) for [EPiServer's](https://www.episerver.com/) platform. This tool automates creation of Graphs based on the defined available content types.
@@ -40,7 +39,7 @@ public class TestOverrideGraphType : ScalarGraphType, ICustomGraphType
 You can use GraphTypeAttribute on class to change graph name or hide it and you can use GraphPropertyAttribute to change name on property or hide
 
 ```cs
-[GraphType(GraphName = "MyStartPage", Hide = false))]
+[GraphType(GraphName = "MyStartPage", Hide = true/false))]
 [ContentType(DisplayName = "Start page")]
 public class StartPage : PageData
 {
@@ -48,9 +47,10 @@ public class StartPage : PageData
     public virtual virtual string MetaTitle { get; set; }
 
     [Display(Name = "Meta Description", Order = 7)]
+    [GraphProperty(PropertyName = "MyMetaDescription")]
     public virtual string MetaDescription { get; set; }
 
-    [GraphProperty(PropertyName = "MySettings", Hide = false)]
+    [GraphProperty(Hide = true)]
     [Display(Name = "Setting", Order = 10)]
     public virtual Setting Settings { get; set; }
 }
